@@ -64,17 +64,45 @@ def get_all_words_in_path(path):
     return flat([split_snake_case_name_to_words(function_name) for function_name in function_names])
 
 
+def get_functions_names_in_tree(tree):
+    '''Получить списко функции в дереве
+    '''
+    return [
+        node.name.lower()
+        for node in ast.walk(tree)
+        if isinstance(node, ast.FunctionDef)
+    ]
+
+
 def get_top_verbs_in_path(path, top_size=10):
     global Path
     Path = path
     trees = [t for t in get_trees(None) if t]
-    fncs = [f for f in flat([[node.name.lower() for node in ast.walk(t) if isinstance(node, ast.FunctionDef)] for t in trees]) if not (f.startswith('__') and f.endswith('__'))]
-    print('functions extracted')
-    verbs = flat([get_verbs_from_function_name(function_name) for function_name in fncs])
+
+    # Формируем список всех функций
+    functions_names = flat(
+        [get_functions_names_in_tree(t) for t in trees]
+    )
+
+    # Удаляем магический функции
+    functions_names = [
+        name for name in functions_names
+        if not (name.startswith('__') and name.endswith('__'))
+    ]
+
+    # Формируем список глаголов, содержащихся в названиях функций
+    verbs = flat(
+        [
+            get_verbs_from_function_name(function_name)
+            for function_name in functions_names
+        ]
+    )
     return collections.Counter(verbs).most_common(top_size)
+
+
 def get_top_functions_names_in_path(path, top_size=10):
-    t = get_trees(path)
-    nms = [f for f in flat([[node.name.lower() for node in ast.walk(t) if isinstance(node, ast.FunctionDef)] for t in t]) if not (f.startswith('__') and f.endswith('__'))]
+    trees = get_trees(path)
+    nms = [f for f in flat([[node.name.lower() for node in ast.walk(t) if isinstance(node, ast.FunctionDef)] for t in trees]) if not (f.startswith('__') and f.endswith('__'))]
     return collections.Counter(nms).most_common(top_size)
 
 
@@ -89,7 +117,10 @@ projects = [
 ]
 for project in projects:
     path = os.path.join('.', project)
+    print(path)
     wds += get_top_verbs_in_path(path)
+
+print(wds)
 
 top_size = 200
 print('total %s words, %s unique' % (len(wds), len(set(wds))))
