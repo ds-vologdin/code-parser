@@ -94,7 +94,7 @@ def get_all_words_in_path(path):
     '''
     trees = [t for t in get_trees(path) if t]
     # Получаем список всех имён в дереве ast
-    names = flat([get_all_names_in_tree(t) for t in trees if t])
+    names = flat([get_all_names_in_tree(t) for t in trees])
     # Исключаем магические функции
     names = [
         f for f in names if not (f.startswith('__') and f.endswith('__'))
@@ -118,7 +118,7 @@ def get_top_verbs_in_path(path, top_size=10):
 
     # Формируем список всех функций
     functions_names = flat(
-        [get_functions_names_in_tree(t) for t in trees if t]
+        [get_functions_names_in_tree(t) for t in trees]
     )
 
     # Удаляем магический функции
