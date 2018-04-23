@@ -4,3 +4,5 @@
 
 ## Как использовать
 Пример использования приведён в example.py
+
+python3 example.py --path='/home/user/coding/django' --top-size=50
