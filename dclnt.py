@@ -18,9 +18,9 @@ def is_verb(word):
     return pos_info[0][1] == 'VB'
 
 
-def get_filenames_in_path(path, top_size=100):
+def get_filenames_in_path(path, max_count_files=500):
     ''' Получить все имена файлов с расширение .py в папке (рекурсивно)
-    top_size - ограничение на количество файлов
+    max_count_files - ограничение на количества файлов
     '''
     filenames = []
     for dirname, dirs, files in os.walk(path, topdown=True):
@@ -34,9 +34,9 @@ def get_filenames_in_path(path, top_size=100):
         filenames += filenames_current
 
         # Проверяем набрали ли мы уже нужное количество файлов
-        if len(filenames) >= top_size:
+        if len(filenames) >= max_count_files:
             # Обрезаем список до нужного количества элементов
-            filenames = filenames[0:top_size]
+            filenames = filenames[0:max_count_files]
             break
     return filenames
 
@@ -51,7 +51,10 @@ def get_trees(path, with_filenames=False, with_file_content=False):
     trees = []
     for filename in filenames:
         with open(filename, 'r', encoding='utf-8') as attempt_handler:
-            main_file_content = attempt_handler.read()
+            try:
+                main_file_content = attempt_handler.read()
+            except:
+                continue
         try:
             tree = ast.parse(main_file_content)
         except SyntaxError as e:
@@ -69,6 +72,8 @@ def get_trees(path, with_filenames=False, with_file_content=False):
 
 def get_all_names_in_tree(tree):
     ''' Получить все имена из ast дерева '''
+    if not tree:
+        return []
     return [
         node.id for node in ast.walk(tree) if isinstance(node, ast.Name)
     ]
@@ -89,7 +94,7 @@ def get_all_words_in_path(path):
     '''
     trees = [t for t in get_trees(path) if t]
     # Получаем список всех имён в дереве ast
-    names = flat([get_all_names_in_tree(t) for t in trees])
+    names = flat([get_all_names_in_tree(t) for t in trees if t])
     # Исключаем магические функции
     names = [
         f for f in names if not (f.startswith('__') and f.endswith('__'))
@@ -99,6 +104,8 @@ def get_all_words_in_path(path):
 
 def get_functions_names_in_tree(tree):
     ''' Получить список функций в дереве ast '''
+    if not tree:
+        return []
     return [node.name.lower()
             for node in ast.walk(tree)
             if isinstance(node, ast.FunctionDef)]
@@ -111,7 +118,7 @@ def get_top_verbs_in_path(path, top_size=10):
 
     # Формируем список всех функций
     functions_names = flat(
-        [get_functions_names_in_tree(t) for t in trees]
+        [get_functions_names_in_tree(t) for t in trees if t]
     )
 
     # Удаляем магический функции
@@ -135,7 +142,7 @@ def get_top_functions_names_in_path(path, top_size=10):
     # Формируем список имён в ast деревьях
     names = [
         f for f in flat(
-            [get_functions_names_in_tree(t) for t in trees]
+            [get_functions_names_in_tree(t) for t in trees if t]
         ) if not (f.startswith('__') and f.endswith('__'))
     ]
     return collections.Counter(names).most_common(top_size)
