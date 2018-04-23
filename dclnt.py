@@ -22,6 +22,8 @@ def get_filenames_in_path(path, max_count_files=500):
     ''' Получить все имена файлов с расширение .py в папке (рекурсивно)
     max_count_files - ограничение на количества файлов
     '''
+    if not path:
+        return []
     filenames = []
     for dirname, dirs, files in os.walk(path, topdown=True):
         # формируем список файлов с расширением .py в каждой папке
@@ -86,6 +88,8 @@ def get_verbs_from_function_name(function_name):
 
 def split_snake_case_name_to_words(name):
     ''' Разбить имя на слова '''
+    if not name:
+        return []
     return [n for n in name.split('_') if n]
 
 
