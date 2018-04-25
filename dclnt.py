@@ -5,9 +5,9 @@ import collections
 from nltk import pos_tag
 
 
-def flat(_list):
+def flat(not_flat_list):
     """ [(1,2), (3,4)] -> [1, 2, 3, 4]"""
-    return sum([list(item) for item in _list], [])
+    return [item for sublist in not_flat_list for item in sublist]
 
 
 def is_verb(word):
