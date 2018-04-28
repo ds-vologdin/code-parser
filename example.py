@@ -23,7 +23,7 @@ path='./django, ./flask, ./pyramid, ./reddit, ./requests, ./sqlalchemy'
     print(helpText)
 
 
-def main(args):
+def parse_argv():
     # Смотрим переданные параметры и инициируем переменные
     try:
         opts, args = getopt.getopt(
@@ -31,27 +31,40 @@ def main(args):
     except getopt.GetoptError as err:
         print("parameter error: ", err)
         usage()
-        return -1
+        return None
 
-    top_size = 20
-    path = './django, ./flask, ./pyramid, ./reddit, ./requests, ./sqlalchemy'
+    options = {}
     for o, a in opts:
         if o == '--top-size':
             try:
-                top_size = int(a)
+                options['top-size'] = int(a)
             except:
                 print('top_size must be a number')
                 usage()
-                return -1
+                return None
         elif o == '--path':
-            path = a
+            options['path'] = a
         elif o == '--help':
             usage()
             return 1
         else:
             print('unhandled option: %s' % (o))
             usage()
-            return -1
+            return None
+    return options
+
+
+def main(args):
+    # Парсим argv
+    options = parse_argv()
+    if not options:
+        return -1
+
+    top_size = options.get('top-size', 20)
+    path = options.get(
+        'path',
+        './django, ./flask, ./pyramid, ./reddit, ./requests, ./sqlalchemy'
+    )
 
     # Формируем список путей до анализируемых проектов
     projects = path.replace(' ', '').split(',')
