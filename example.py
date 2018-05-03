@@ -57,8 +57,6 @@ def parse_argv():
 def main(args):
     # Парсим argv
     options = parse_argv()
-    if not options:
-        return -1
 
     top_size = options.get('top-size', 20)
     path = options.get(
