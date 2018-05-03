@@ -10,7 +10,7 @@ from dclnt import (get_top_verbs_in_path,
 
 
 def usage():
-    print("usage: python3", sys.argv[0], "OPTIONS")
+    print("usage: python3 {0} OPTIONS".format(sys.argv[0]))
     print("OPTIONS")
     helpText = '''--top-size=XXX По умолчанию top-size=20
 --path=PATH - папки, в которых требуется провести лексический анализ.
@@ -48,7 +48,7 @@ def parse_argv():
             usage()
             return 1
         else:
-            print('unhandled option: %s' % (o))
+            print('unhandled option: {0}'.format(o))
             usage()
             return None
     return options
@@ -84,21 +84,21 @@ def main(args):
         filenames += get_filenames_in_path(path_project)
 
     # Выводим на экран результаты
-    print('total %d files' % len(filenames))
+    print('total {0} files'.format(len(filenames)))
     print('-'*80)
 
-    print('total %d verbs, %d unique' % (len(verbs), len(set(verbs))))
+    print('total {0} verbs, {1} unique'.format(len(verbs), len(set(verbs))))
     for word, occurence in verbs:
         print(word, occurence)
 
     print('-'*80)
-    print('total %d functions names, %d unique' %
-          (len(functions_names), len(set(functions_names))))
+    print('total {0} functions names, {0} unique'.format(
+          len(functions_names), len(set(functions_names))))
     for word, occurence in functions_names:
         print(word, occurence)
 
     print('-'*80)
-    print('total %d words, %d unique' % (len(words), len(set(words))))
+    print('total {0} words, {1} unique'.format(len(words), len(set(words))))
     for word, occurence in collections.Counter(words).most_common(top_size):
         print(word, occurence)
 
