@@ -6,7 +6,9 @@ import collections
 from dclnt import (get_top_verbs_in_path,
                    get_top_functions_names_in_path,
                    get_all_words_in_path,
-                   get_filenames_in_path)
+                   get_filenames_in_path,
+                   clone_git_url)
+import shutil
 
 
 def usage():
@@ -18,6 +20,7 @@ def usage():
 --path='~/coding/django, ~/coding/flask'
 По умолчанию
 path='./django, ./flask, ./pyramid, ./reddit, ./requests, ./sqlalchemy'
+--git-url=git_url - url проекта на github (или в другом git репозитории)
 --help
 '''
     print(helpText)
@@ -27,7 +30,7 @@ def parse_argv():
     # Смотрим переданные параметры и инициируем переменные
     try:
         opts, args = getopt.getopt(
-            sys.argv[1:], '', ['top-size=', 'path=', 'help'])
+            sys.argv[1:], '', ['top-size=', 'path=', 'git-url=', 'help'])
     except getopt.GetoptError as err:
         print("parameter error: ", err)
         usage()
@@ -44,6 +47,8 @@ def parse_argv():
                 return None
         elif o == '--path':
             options['path'] = a
+        elif o == '--git-url':
+            options['git_url'] = a
         elif o == '--help':
             usage()
             return 1
@@ -59,13 +64,20 @@ def main(args):
     options = parse_argv()
 
     top_size = options.get('top-size', 20)
-    path = options.get(
-        'path',
-        './django, ./flask, ./pyramid, ./reddit, ./requests, ./sqlalchemy'
-    )
+    path = options.get('path', '')
+    git_url = options.get('git_url', '')
 
     # Формируем список путей до анализируемых проектов
-    projects = path.replace(' ', '').split(',')
+    projects = []
+    if path:
+        projects = path.replace(' ', '').split(',')
+    path_repo = clone_git_url(git_url)
+    if path_repo:
+        projects.append(path_repo)
+
+    if not projects:
+        print('no projects...no statistics...')
+        return 0
 
     # Считаем статистику
     verbs = []
@@ -99,6 +111,10 @@ def main(args):
     print('total {0} words, {1} unique'.format(len(words), len(set(words))))
     for word, occurence in collections.Counter(words).most_common(top_size):
         print(word, occurence)
+
+    # Не надо забывать чистить за собой скаченные репозитории
+    if path_repo:
+        shutil.rmtree(path_repo)
 
     return 0
 
