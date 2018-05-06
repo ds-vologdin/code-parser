@@ -3,12 +3,13 @@
 
 import getopt
 import collections
-from dclnt import (get_top_verbs_in_path,
-                   get_top_functions_names_in_path,
-                   get_all_words_in_path,
-                   get_filenames_in_path,
-                   clone_git_url)
-import shutil
+from dclnt import (
+    get_top_verbs_in_path,
+    get_top_functions_names_in_path,
+    get_all_words_in_path,
+    get_filenames_in_path,
+)
+from gitrepo import GitRepo
 
 
 def usage():
@@ -71,9 +72,11 @@ def main(args):
     projects = []
     if path:
         projects = path.replace(' ', '').split(',')
-    path_repo = clone_git_url(git_url)
-    if path_repo:
-        projects.append(path_repo)
+    # path_repo = clone_git_url(git_url)
+    git_repo = GitRepo(git_url)
+    git_repo.clone_git_url()
+    if git_repo.local_path:
+        projects.append(git_repo.local_path)
 
     if not projects:
         print('no projects...no statistics...')
@@ -113,8 +116,7 @@ def main(args):
         print(word, occurence)
 
     # Не надо забывать чистить за собой скаченные репозитории
-    if path_repo:
-        shutil.rmtree(path_repo)
+    git_repo.remove_local_git_repo()
 
     return 0
 
