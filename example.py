@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import getopt
+import argparse
 import collections
 from dclnt import (
     get_top_verbs_in_path,
@@ -12,71 +12,45 @@ from dclnt import (
 from gitrepo import GitRepo
 
 
-def usage():
-    print("usage: python3 {0} OPTIONS".format(sys.argv[0]))
-    print("OPTIONS")
-    helpText = '''--top-size=XXX По умолчанию top-size=20
---path=PATH - папки, в которых требуется провести лексический анализ.
-Несколько папок можно указать в кавычках через запятую:
---path='~/coding/django, ~/coding/flask'
-По умолчанию
-path='./django, ./flask, ./pyramid, ./reddit, ./requests, ./sqlalchemy'
---git-url=git_url - url проекта на github (или в другом git репозитории)
---help
-'''
-    print(helpText)
-
-
-def parse_argv():
-    # Смотрим переданные параметры и инициируем переменные
-    try:
-        opts, args = getopt.getopt(
-            sys.argv[1:], '', ['top-size=', 'path=', 'git-url=', 'help'])
-    except getopt.GetoptError as err:
-        print("parameter error: ", err)
-        usage()
-        return None
-
-    options = {}
-    for o, a in opts:
-        if o == '--top-size':
-            try:
-                options['top-size'] = int(a)
-            except:
-                print('top_size must be a number')
-                usage()
-                return None
-        elif o == '--path':
-            options['path'] = a
-        elif o == '--git-url':
-            options['git_url'] = a
-        elif o == '--help':
-            usage()
-            return 1
-        else:
-            print('unhandled option: {0}'.format(o))
-            usage()
-            return None
-    return options
+def parse_argv_with_argparse():
+    description_programm = '''Приложение для проведения лексического анализа \
+программного кода'''
+    parser = argparse.ArgumentParser(description=description_programm)
+    parser.add_argument(
+        '--path',
+        help='''Пути к каталогам, где требуется провести анализ кода.
+Можно указать несколько катологов в кавычках:
+    '/home/bill/coding/ /home/alisa/coding/' '''
+    )
+    parser.add_argument(
+        "--git-url",
+        help="URL git-репозитория с кодом, который требуется проанализировать"
+    )
+    parser.add_argument(
+        "--top-size", type=int, default=20,
+        help="Ограничивает вывод количества слов"
+    )
+    return parser.parse_args()
 
 
 def main(args):
     # Парсим argv
-    options = parse_argv()
+    args = parse_argv_with_argparse()
 
-    top_size = options.get('top-size', 20)
-    path = options.get('path', '')
-    git_url = options.get('git_url', '')
+    top_size = args.top_size
+    path = args.path
+    git_url = args.git_url
 
     # Формируем список путей до анализируемых проектов
     projects = []
     if path:
-        projects = path.replace(' ', '').split(',')
+        projects = path.split()
     # path_repo = clone_git_url(git_url)
-    git_repo = GitRepo(git_url)
-    git_repo.clone_git_url()
-    if git_repo.local_path:
-        projects.append(git_repo.local_path)
+    if git_url:
+        git_repo = GitRepo(git_url)
+        git_repo.clone_git_url()
+        if git_repo.local_path:
+            projects.append(git_repo.local_path)
 
     if not projects:
         print('no projects...no statistics...')
@@ -116,7 +90,10 @@ def main(args):
         print(word, occurence)
 
     # Не надо забывать чистить за собой скаченные репозитории
-    git_repo.remove_local_git_repo()
+    # TODO: надо подумать, возможно лучше вынести удаление "временного
+    # каталога" в деструктор класса
+    if git_url:
+        git_repo.remove_local_git_repo()
 
     return 0
 
