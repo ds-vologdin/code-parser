@@ -12,7 +12,7 @@ from dclnt import (
 from gitrepo import GitRepo
 
 
-def parse_argv_with_argparse():
+def parse_argv():
     description_programm = '''Приложение для проведения лексического анализа \
 программного кода'''
     parser = argparse.ArgumentParser(description=description_programm)
@@ -35,7 +35,7 @@ def parse_argv_with_argparse():
 
 def main(args):
     # Парсим argv
-    args = parse_argv_with_argparse()
+    args = parse_argv()
 
     top_size = args.top_size
     path = args.path
