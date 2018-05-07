@@ -39,6 +39,16 @@ def get_projects_in_path(path=''):
     return path.split()
 
 
+def print_statistics_words_top(words_top, words_type='words'):
+    print('-'*80)
+    print('total {total} {words_type}'.format(
+        total=len(words_top),
+        words_type=words_type
+    ))
+    for word, occurence in words_top:
+        print(word, occurence)
+
+
 def main(args):
     # Парсим argv
     args = parse_argv()
@@ -87,38 +97,16 @@ def main(args):
 
     # Выводим на экран результаты
     print('total {0} files'.format(len(filenames)))
-
+    print('function names statistics')
+    print_statistics_words_top(words_top, words_type='words')
+    print_statistics_words_top(verbs_top, words_type='verbs')
+    print_statistics_words_top(nouns_top, words_type='nouns')
+    print_statistics_words_top(functions_names, words_type='functions names')
     print('-'*80)
-    print('total {0} words, {1} unique'.format(
-        len(words_top), len(set(words_top))
-    ))
-    for word, occurence in words_top:
-        print(word, occurence)
-
-    print('-'*80)
-    print('total {0} verbs, {1} unique'.format(
-        len(verbs_top), len(set(verbs_top))
-    ))
-    for word, occurence in verbs_top:
-        print(word, occurence)
-
-    print('-'*80)
-    print('total {0} nouns, {1} unique'.format(
-        len(nouns_top), len(set(nouns_top))
-    ))
-    for word, occurence in nouns_top:
-        print(word, occurence)
-
-    print('-'*80)
-    print('total {0} functions names, {0} unique'.format(
-          len(functions_names), len(set(functions_names))))
-    for word, occurence in functions_names:
-        print(word, occurence)
-
-    print('-'*80)
-    print('total {0} words, {1} unique'.format(len(words), len(set(words))))
-    for word, occurence in collections.Counter(words).most_common(top_size):
-        print(word, occurence)
+    print('all code statistics')
+    print_statistics_words_top(
+        collections.Counter(words).most_common(top_size), words_type='words'
+    )
 
     # Не надо забывать чистить за собой скачанные репозитории
     if git_url:
