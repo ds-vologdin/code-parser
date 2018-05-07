@@ -19,6 +19,14 @@ def is_verb(word):
     return pos_info[0][1] == 'VB'
 
 
+def is_noun(word):
+    ''' Проверка является ли word существительным '''
+    if not word:
+        return False
+    pos_info = pos_tag([word])
+    return pos_info[0][1] == 'NN'
+
+
 def get_filenames_in_path(path, max_count_files=500):
     ''' Получить все имена файлов с расширение .py в папке (рекурсивно)
     max_count_files - ограничение на количества файлов
@@ -87,6 +95,16 @@ def get_verbs_from_function_name(function_name):
     return [word for word in function_name.split('_') if is_verb(word)]
 
 
+def get_nouns_from_function_name(function_name):
+    ''' Получить существительные из названия функции '''
+    return [word for word in function_name.split('_') if is_noun(word)]
+
+
+def get_words_from_function_name(function_name):
+    ''' Получить слова из названия функции '''
+    return [word for word in function_name.split('_')]
+
+
 def split_snake_case_name_to_words(name):
     ''' Разбить имя на слова '''
     if not name:
@@ -95,8 +113,7 @@ def split_snake_case_name_to_words(name):
 
 
 def get_all_words_in_path(path):
-    ''' Получить все слова используемые в текстовых файлах каталога path
-    '''
+    ''' Получить все слова используемые в текстовых файлах каталога path '''
     trees = [t for t in get_trees(path) if t]
     # Получаем список всех имён в дереве ast
     names = flat([get_all_names_in_tree(t) for t in trees])
@@ -118,6 +135,11 @@ def get_functions_names_in_tree(tree):
 
 def get_top_verbs_in_path(path, top_size=10):
     ''' Получить ТОП используемых глаголов в каталоге path '''
+    return get_top_words_in_path(path, top_size, word_type='verb')
+
+
+def get_top_words_in_path(path, top_size=10, word_type='verb'):
+    ''' Получить ТОП используемых глаголов в каталоге path '''
     # Формируем список ast деревьев
     trees = [t for t in get_trees(path) if t]
 
@@ -131,13 +153,24 @@ def get_top_verbs_in_path(path, top_size=10):
         name for name in functions_names
         if not (name.startswith('__') and name.endswith('__'))
     ]
-
-    # Формируем список глаголов, содержащихся в названиях функций
-    verbs = flat([
-        get_verbs_from_function_name(function_name)
-        for function_name in functions_names
-    ])
-    return collections.Counter(verbs).most_common(top_size)
+    if word_type == 'verb':
+        # Формируем список глаголов, содержащихся в названиях функций
+        words = flat([
+            get_verbs_from_function_name(function_name)
+            for function_name in functions_names
+        ])
+    elif word_type == 'noun':
+        # Формируем список глаголов, содержащихся в названиях функций
+        words = flat([
+            get_nouns_from_function_name(function_name)
+            for function_name in functions_names
+        ])
+    elif word_type == 'any':
+        words = flat([
+            get_words_from_function_name(function_name)
+            for function_name in functions_names
+        ])
+    return collections.Counter(words).most_common(top_size)
 
 
 def get_top_functions_names_in_path(path, top_size=10):

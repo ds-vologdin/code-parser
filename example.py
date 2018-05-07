@@ -4,10 +4,10 @@
 import argparse
 import collections
 from dclnt import (
-    get_top_verbs_in_path,
     get_top_functions_names_in_path,
     get_all_words_in_path,
     get_filenames_in_path,
+    get_top_words_in_path,
 )
 from gitrepo import GitRepo
 
@@ -57,13 +57,23 @@ def main(args):
         return 0
 
     # Считаем статистику
-    verbs = []
+    verbs_top = []
+    nouns_top = []
+    words_top = []
     functions_names = []
     words = []
     filenames = []
 
     for path_project in projects:
-        verbs += get_top_verbs_in_path(path_project, top_size)
+        words_top += get_top_words_in_path(
+            path_project, top_size, word_type='any'
+        )
+        verbs_top += get_top_words_in_path(
+            path_project, top_size, word_type='verb'
+        )
+        nouns_top += get_top_words_in_path(
+            path_project, top_size, word_type='noun'
+        )
         functions_names += get_top_functions_names_in_path(
             path_project, top_size
         )
@@ -72,10 +82,26 @@ def main(args):
 
     # Выводим на экран результаты
     print('total {0} files'.format(len(filenames)))
-    print('-'*80)
 
-    print('total {0} verbs, {1} unique'.format(len(verbs), len(set(verbs))))
-    for word, occurence in verbs:
+    print('-'*80)
+    print('total {0} words, {1} unique'.format(
+        len(words_top), len(set(words_top))
+    ))
+    for word, occurence in words_top:
+        print(word, occurence)
+
+    print('-'*80)
+    print('total {0} verbs, {1} unique'.format(
+        len(verbs_top), len(set(verbs_top))
+    ))
+    for word, occurence in verbs_top:
+        print(word, occurence)
+
+    print('-'*80)
+    print('total {0} nouns, {1} unique'.format(
+        len(nouns_top), len(set(nouns_top))
+    ))
+    for word, occurence in nouns_top:
         print(word, occurence)
 
     print('-'*80)
@@ -89,7 +115,7 @@ def main(args):
     for word, occurence in collections.Counter(words).most_common(top_size):
         print(word, occurence)
 
-    # Не надо забывать чистить за собой скаченные репозитории
+    # Не надо забывать чистить за собой скачанные репозитории
     if git_url:
         git_repo.remove_local_git_repo()
 
