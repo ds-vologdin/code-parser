@@ -33,6 +33,12 @@ def parse_argv():
     return parser.parse_args()
 
 
+def get_projects_in_path(path=''):
+    if not path:
+        return []
+    return path.split()
+
+
 def main(args):
     # Парсим argv
     args = parse_argv()
@@ -42,15 +48,14 @@ def main(args):
     git_url = args.git_url
 
     # Формируем список путей до анализируемых проектов
-    projects = []
-    if path:
-        projects = path.split()
+    projects = get_projects_in_path(path)
+
     # path_repo = clone_git_url(git_url)
     if git_url:
         git_repo = GitRepo(git_url)
-        git_repo.clone_git_url()
-        if git_repo.local_path:
-            projects.append(git_repo.local_path)
+        path_git = git_repo.clone_git_url()
+        if path_git:
+            projects.append(path_git)
 
     if not projects:
         print('no projects...no statistics...')

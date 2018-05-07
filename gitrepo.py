@@ -12,9 +12,18 @@ class GitRepo:
         self.branch = branch
 
     def clone_git_url(self):
-        return Repo.clone_from(
-            self.git_url, self.local_path, branch=self.branch
-        )
+        try:
+            Repo.clone_from(
+                self.git_url, self.local_path, branch=self.branch
+            )
+        except:
+            self.remove_local_git_repo()
+            self.local_path = ''
+        return self.local_path
 
     def remove_local_git_repo(self):
-        return shutil.rmtree(self.local_path)
+        try:
+            shutil.rmtree(self.local_path)
+        except:
+            return False
+        return True
