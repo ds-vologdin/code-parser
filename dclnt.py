@@ -89,19 +89,15 @@ def get_all_names_in_tree(tree):
     ]
 
 
-def get_verbs_from_function_name(function_name):
-    ''' Получить глаголы из названия функции '''
-    return [word for word in function_name.split('_') if is_verb(word)]
-
-
-def get_nouns_from_function_name(function_name):
-    ''' Получить существительные из названия функции '''
-    return [word for word in function_name.split('_') if is_noun(word)]
-
-
-def get_words_from_function_name(function_name):
-    ''' Получить слова из названия функции '''
-    return [word for word in function_name.split('_')]
+def get_words_from_name(name, word_type='verb'):
+    words = []
+    if word_type == 'verb':
+        words = [word for word in name.split('_') if is_verb(word)]
+    elif word_type == 'noun':
+        words = [word for word in name.split('_') if is_noun(word)]
+    elif word_type == 'any':
+        words = [word for word in name.split('_')]
+    return words
 
 
 def split_snake_case_name_to_words(name):
@@ -167,23 +163,13 @@ def get_top_words_in_path(path, top_size=10, word_type='verb',
         name for name in names_in_code
         if not (name.startswith('__') and name.endswith('__'))
     ]
-    if word_type == 'verb':
-        # Формируем список глаголов, содержащихся в названиях функций
-        words = flat([
-            get_verbs_from_function_name(name)
-            for name in names_in_code
-        ])
-    elif word_type == 'noun':
-        # Формируем список глаголов, содержащихся в названиях функций
-        words = flat([
-            get_nouns_from_function_name(name)
-            for name in names_in_code
-        ])
-    elif word_type == 'any':
-        words = flat([
-            get_words_from_function_name(name)
-            for name in names_in_code
-        ])
+
+    words = flat([
+        # get_verbs_from_function_name(name)
+        get_words_from_name(name, word_type=word_type)
+        for name in names_in_code
+    ])
+
     return collections.Counter(words).most_common(top_size)
 
 
