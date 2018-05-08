@@ -23,12 +23,27 @@ def parse_argv():
     '/home/bill/coding/ /home/alisa/coding/' '''
     )
     parser.add_argument(
-        "--git-url",
-        help="URL git-репозитория с кодом, который требуется проанализировать"
+        '--git-url',
+        help='URL git-репозитория с кодом, который требуется проанализировать'
     )
     parser.add_argument(
-        "--top-size", type=int, default=20,
-        help="Ограничивает вывод количества слов"
+        '--top-size', type=int, default=20,
+        help='Ограничивает вывод количества слов'
+    )
+    parser.add_argument(
+        '--word-type', choices=['verb', 'noun', 'any'],  default='verb',
+        help='''Параметр позволяет задать какая часть речи нас интересует для \
+формирования статистики. Возможные значения: verb (по-умолчанию), noun и any.
+'''
+    )
+    parser.add_argument(
+        '--parse-code-type',
+        choices=['function', 'variable'],
+        default='function',
+        help='''Параметр позволяет задать, что мы будем анализировать: \
+имена функций или имена переменных.
+Возможные значения: function (по-умолчанию), variable.
+'''
     )
     return parser.parse_args()
 
@@ -57,14 +72,10 @@ def main(args):
     # Парсим argv
     args = parse_argv()
 
-    top_size = args.top_size
-    path = args.path
-    git_url = args.git_url
-
     # Формируем список путей до анализируемых проектов
-    projects = get_projects_in_path(path)
+    projects = get_projects_in_path(args.path)
 
-    git_repo = GitRepo(git_url)
+    git_repo = GitRepo(args.git_url)
     path_git = git_repo.clone_git_url()
     if path_git:
         projects.append(path_git)
@@ -74,41 +85,20 @@ def main(args):
         return 0
 
     # Считаем статистику
-    verbs_top = []
-    nouns_top = []
     words_top = []
-    functions_names = []
-    words = []
     filenames = []
 
     for path_project in projects:
         words_top += get_top_words_in_path(
-            path_project, top_size, word_type='any'
+            path_project, args.top_size, word_type=args.word_type,
+            parse_code_type=args.parse_code_type
         )
-        verbs_top += get_top_words_in_path(
-            path_project, top_size, word_type='verb'
-        )
-        nouns_top += get_top_words_in_path(
-            path_project, top_size, word_type='noun'
-        )
-        functions_names += get_top_functions_names_in_path(
-            path_project, top_size
-        )
-        words += get_all_words_in_path(path_project)
         filenames += get_filenames_in_path(path_project)
 
     # Выводим на экран результаты
     print('total {0} files'.format(len(filenames)))
     print('function names statistics')
-    print_statistics_words_top(words_top, words_type='words')
-    print_statistics_words_top(verbs_top, words_type='verbs')
-    print_statistics_words_top(nouns_top, words_type='nouns')
-    print_statistics_words_top(functions_names, words_type='functions names')
-    print('-'*80)
-    print('all code statistics')
-    print_statistics_words_top(
-        collections.Counter(words).most_common(top_size), words_type='words'
-    )
+    print_statistics_words_top(words_top, words_type=args.word_type)
 
     # Не надо забывать чистить за собой скачанные репозитории
     git_repo.remove_local_git_repo()

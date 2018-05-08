@@ -125,11 +125,26 @@ def get_all_words_in_path(path):
 
 def get_functions_names_in_tree(tree):
     ''' Получить список функций в дереве ast '''
+    return get_names_in_ast_tree(tree, type_name='function')
+
+
+def get_names_in_ast_tree(tree, type_name='function'):
+    ''' Получить список названий в дереве ast '''
     if not tree:
         return []
-    return [node.name.lower()
+    if type_name == 'function':
+        names = [
+            node.name.lower()
             for node in ast.walk(tree)
-            if isinstance(node, ast.FunctionDef)]
+            if isinstance(node, ast.FunctionDef)
+        ]
+    if type_name == 'variable':
+        names = [
+            node.id.lower()
+            for node in ast.walk(tree)
+            if (isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store))
+        ]
+    return names if names else []
 
 
 def get_top_verbs_in_path(path, top_size=10):
@@ -137,37 +152,37 @@ def get_top_verbs_in_path(path, top_size=10):
     return get_top_words_in_path(path, top_size, word_type='verb')
 
 
-def get_top_words_in_path(path, top_size=10, word_type='verb'):
+def get_top_words_in_path(path, top_size=10, word_type='verb',
+                          parse_code_type='function'):
     ''' Получить ТОП используемых глаголов в каталоге path '''
     # Формируем список ast деревьев
     trees = [t for t in get_trees(path) if t]
 
-    # Формируем список всех функций
-    functions_names = flat(
-        [get_functions_names_in_tree(t) for t in trees]
+    names_in_code = flat(
+        [get_names_in_ast_tree(t, type_name=parse_code_type) for t in trees]
     )
 
-    # Удаляем магический функции
-    functions_names = [
-        name for name in functions_names
+    # Удаляем магию
+    names_in_code = [
+        name for name in names_in_code
         if not (name.startswith('__') and name.endswith('__'))
     ]
     if word_type == 'verb':
         # Формируем список глаголов, содержащихся в названиях функций
         words = flat([
-            get_verbs_from_function_name(function_name)
-            for function_name in functions_names
+            get_verbs_from_function_name(name)
+            for name in names_in_code
         ])
     elif word_type == 'noun':
         # Формируем список глаголов, содержащихся в названиях функций
         words = flat([
-            get_nouns_from_function_name(function_name)
-            for function_name in functions_names
+            get_nouns_from_function_name(name)
+            for name in names_in_code
         ])
     elif word_type == 'any':
         words = flat([
-            get_words_from_function_name(function_name)
-            for function_name in functions_names
+            get_words_from_function_name(name)
+            for name in names_in_code
         ])
     return collections.Counter(words).most_common(top_size)
 
