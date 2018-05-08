@@ -48,7 +48,7 @@ def parse_argv():
         '--output',
         choices=['stdout', 'json', 'csv'],
         default='stdout',
-        help='''Формат вывода
+        help='''Формат вывода.
 Возможные значения:
 stdout (по-умолчанию) - печать на консоль;
 json - печать в json-файл;
@@ -87,7 +87,7 @@ def print_statistics_words_top(words_top, words_type='words'):
 
 
 def output_to_json(statistic):
-    statistics_json = json.dumps(statistic)
+    statistics_json = json.dumps(statistic, sort_keys=True, indent=4)
     with open('words_code_stat.json', 'w') as json_file:
         json_file.write(statistics_json)
 
