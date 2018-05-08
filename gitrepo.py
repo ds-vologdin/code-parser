@@ -12,6 +12,7 @@ class GitRepo:
             to_dir += git_url.split('/')[-1].replace('.git', '') + '/'
         self.local_path = to_dir
         self.branch = branch
+        self.is_cloned = False
 
     def clone_git_url(self):
         ''' Возвращает путь до каталога, куда был клонирован репозиторий
@@ -22,9 +23,11 @@ class GitRepo:
             Repo.clone_from(
                 self.git_url, self.local_path, branch=self.branch
             )
+            self.is_cloned = True
         except:
             self.remove_local_git_repo()
             self.local_path = ''
+            self.is_cloned = False
         return self.local_path
 
     def remove_local_git_repo(self):
@@ -32,8 +35,11 @@ class GitRepo:
         иначе False '''
         if (not self.local_path or self.local_path == '/tmp/'):
             return False
+        if not self.is_cloned:
+            return False
         try:
             shutil.rmtree(self.local_path)
+            self.is_cloned = False
         except:
             return False
         return True

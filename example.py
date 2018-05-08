@@ -51,8 +51,16 @@ def get_projects_in_path(path=''):
     return path.split()
 
 
+def get_projects(local_path=None, git_repo=None):
+    projects = get_projects_in_path(local_path)
+    if not git_repo.is_cloned:
+        git_repo.clone_git_url()
+    if git_repo.local_path:
+        projects.append(git_repo.local_path)
+    return projects
+
+
 def print_statistics_words_top(words_top, words_type='words'):
-    print('-'*80)
     print('total {total} {words_type}'.format(
         total=len(words_top),
         words_type=words_type
@@ -69,14 +77,10 @@ def main(args):
     # Парсим argv
     args = parse_argv()
 
-    # Формируем список путей до анализируемых проектов
-    projects = get_projects_in_path(args.path)
-
     git_repo = GitRepo(args.git_url)
-    path_git = git_repo.clone_git_url()
-    if path_git:
-        projects.append(path_git)
 
+    # Формируем список путей до анализируемых проектов
+    projects = get_projects(local_path=args.path, git_repo=git_repo)
     if not projects:
         print('no projects...no statistics...')
         return 0
@@ -94,7 +98,7 @@ def main(args):
 
     # Выводим на экран результаты
     print('total {0} files'.format(len(filenames)))
-    print('function names statistics')
+    print('statistic type: {0}'.format(args.parse_code_type))
     print_statistics_words_top(words_top, words_type=args.word_type)
 
     # Не надо забывать чистить за собой скачанные репозитории
