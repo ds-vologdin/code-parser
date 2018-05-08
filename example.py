@@ -60,12 +60,10 @@ def main(args):
     # Формируем список путей до анализируемых проектов
     projects = get_projects_in_path(path)
 
-    # path_repo = clone_git_url(git_url)
-    if git_url:
-        git_repo = GitRepo(git_url)
-        path_git = git_repo.clone_git_url()
-        if path_git:
-            projects.append(path_git)
+    git_repo = GitRepo(git_url)
+    path_git = git_repo.clone_git_url()
+    if path_git:
+        projects.append(path_git)
 
     if not projects:
         print('no projects...no statistics...')
@@ -109,8 +107,7 @@ def main(args):
     )
 
     # Не надо забывать чистить за собой скачанные репозитории
-    if git_url:
-        git_repo.remove_local_git_repo()
+    git_repo.remove_local_git_repo()
 
     return 0
 
