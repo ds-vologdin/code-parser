@@ -7,6 +7,7 @@ from dclnt import (
     get_top_words_in_path,
 )
 from gitrepo import GitRepo
+import csv
 
 
 def parse_argv():
@@ -89,7 +90,11 @@ def output_to_json(statistic):
 
 
 def output_to_csv(statistic):
-    pass
+    with open('words_code_stat.csv', 'w') as csv_file:
+        statistic_writer = csv.writer(csv_file)
+        statistic_writer.writerow([statistic['word_type'], 'occurence'])
+        for word, occurence in statistic['words_top']:
+            statistic_writer.writerow([word, occurence])
 
 
 def output_to_stdout(statistic):
@@ -104,7 +109,7 @@ def output_statistic(statistic, output_type='stdout'):
     if output_type == 'stdout':
         output_to_stdout(statistic)
     elif output_type == 'json':
-        output_to_json
+        output_to_json(statistic)
     elif output_type == 'csv':
         output_to_csv(statistic)
 
