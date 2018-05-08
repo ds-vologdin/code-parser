@@ -3,7 +3,6 @@ import os
 import collections
 
 from nltk import pos_tag
-from git import Repo
 
 
 def flat(not_flat_list):
@@ -184,20 +183,3 @@ def get_top_functions_names_in_path(path, top_size=10):
         ) if not (f.startswith('__') and f.endswith('__'))
     ]
     return collections.Counter(names).most_common(top_size)
-
-
-def clone_git_url(git_url, to_dir='/tmp/', branch='master'):
-    ''' Клонировать git репозиторий.
-    Возвращает функция путь к папке, в которую был клонирован репозиторий.
-    В случае ошибки возвращает пустую строку '''
-    # Клонировать репозиторий в голый /tmp/ не правильно, нужно там создать
-    # папку с правильным именем
-    if not git_url:
-        return ''
-    if to_dir == '/tmp/':
-        to_dir += git_url.split('/')[-1].replace('.git', '') + '/'
-    try:
-        Repo.clone_from(git_url, to_dir, branch=branch)
-    except:
-        return ''
-    return to_dir
