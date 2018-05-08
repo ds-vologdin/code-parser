@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import collections
 from dclnt import (
-    get_top_functions_names_in_path,
-    get_all_words_in_path,
     get_filenames_in_path,
     get_top_words_in_path,
 )
