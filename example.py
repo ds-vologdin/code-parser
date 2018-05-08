@@ -8,6 +8,7 @@ from dclnt import (
 )
 from gitrepo import GitRepo
 import csv
+import json
 
 
 def parse_argv():
@@ -86,7 +87,9 @@ def print_statistics_words_top(words_top, words_type='words'):
 
 
 def output_to_json(statistic):
-    pass
+    statistics_json = json.dumps(statistic)
+    with open('words_code_stat.json', 'w') as json_file:
+        json_file.write(statistics_json)
 
 
 def output_to_csv(statistic):
@@ -99,7 +102,7 @@ def output_to_csv(statistic):
 
 def output_to_stdout(statistic):
     # Выводим на экран результаты
-    print('total {0} files'.format(len(statistic['filenames'])))
+    print('total {0} files'.format(statistic['file_count']))
     print('statistic type: {0}'.format(statistic['parse_code_type']))
     print_statistics_words_top(statistic['words_top'],
                                words_type=statistic['word_type'])
@@ -142,9 +145,9 @@ def main(args):
         'top_size': args.top_size,
         'parse_code_type': args.parse_code_type,
         'words_top': words_top,
-        'filenames': filenames,
+        'file_count': len(filenames),
+        'projects': projects,
     }
-
     output_statistic(statistic, output_type=args.output)
 
     # Не надо забывать чистить за собой скачанные репозитории
