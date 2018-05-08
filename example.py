@@ -42,6 +42,17 @@ def parse_argv():
 Возможные значения: function (по-умолчанию), variable.
 '''
     )
+    parser.add_argument(
+        '--output',
+        choices=['stdout', 'json', 'csv'],
+        default='stdout',
+        help='''Формат вывода
+Возможные значения:
+stdout (по-умолчанию) - печать на консоль;
+json - печать в json-файл;
+csv - печать в csv-файл.
+'''
+    )
     return parser.parse_args()
 
 
@@ -73,6 +84,31 @@ def print_statistics_words_top(words_top, words_type='words'):
     print('='*80)
 
 
+def output_to_json(statistic):
+    pass
+
+
+def output_to_csv(statistic):
+    pass
+
+
+def output_to_stdout(statistic):
+    # Выводим на экран результаты
+    print('total {0} files'.format(len(statistic['filenames'])))
+    print('statistic type: {0}'.format(statistic['parse_code_type']))
+    print_statistics_words_top(statistic['words_top'],
+                               words_type=statistic['word_type'])
+
+
+def output_statistic(statistic, output_type='stdout'):
+    if output_type == 'stdout':
+        output_to_stdout(statistic)
+    elif output_type == 'json':
+        output_to_json
+    elif output_type == 'csv':
+        output_to_csv(statistic)
+
+
 def main(args):
     # Парсим argv
     args = parse_argv()
@@ -96,10 +132,15 @@ def main(args):
         )
         filenames += get_filenames_in_path(path_project)
 
-    # Выводим на экран результаты
-    print('total {0} files'.format(len(filenames)))
-    print('statistic type: {0}'.format(args.parse_code_type))
-    print_statistics_words_top(words_top, words_type=args.word_type)
+    statistic = {
+        'word_type': args.word_type,
+        'top_size': args.top_size,
+        'parse_code_type': args.parse_code_type,
+        'words_top': words_top,
+        'filenames': filenames,
+    }
+
+    output_statistic(statistic, output_type=args.output)
 
     # Не надо забывать чистить за собой скачанные репозитории
     git_repo.remove_local_git_repo()
