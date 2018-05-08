@@ -165,7 +165,6 @@ def get_top_words_in_path(path, top_size=10, word_type='verb',
     ]
 
     words = flat([
-        # get_verbs_from_function_name(name)
         get_words_from_name(name, word_type=word_type)
         for name in names_in_code
     ])
