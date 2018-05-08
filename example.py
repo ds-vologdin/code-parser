@@ -45,8 +45,12 @@ def print_statistics_words_top(words_top, words_type='words'):
         total=len(words_top),
         words_type=words_type
     ))
+    print('='*80)
+    print('| {0:<60}|{1:^15} |'.format(words_type, 'occurence'))
+    print('='*80)
     for word, occurence in words_top:
-        print(word, occurence)
+        print('| {0:<60}|{1:^15} |'.format(word, occurence))
+    print('='*80)
 
 
 def main(args):
