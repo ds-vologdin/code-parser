@@ -26,7 +26,7 @@ def is_noun(word):
     return pos_info[0][1] == 'NN'
 
 
-def get_filenames_in_path(path, max_count_files=500):
+def get_filenames_in_path(path):
     ''' Получить все имена файлов с расширение .py в папке (рекурсивно)
     max_count_files - ограничение на количества файлов
     '''
@@ -43,11 +43,6 @@ def get_filenames_in_path(path, max_count_files=500):
         # Накапливаем результат
         filenames += filenames_current
 
-        # Проверяем набрали ли мы уже нужное количество файлов
-        if len(filenames) >= max_count_files:
-            # Обрезаем список до нужного количества элементов
-            filenames = filenames[0:max_count_files]
-            break
     return filenames
 
 
