@@ -1,18 +1,44 @@
-# dcInt
+# code_parse
 
 Библиотека позволяет оценить на сколько часто используются в проектах те или иные лексические конструкции.
 
+Умеет работать с глаголами и существительными, разбирать как названия функции так и названия переменных.
+
 ## Установка
+Установка из git:
 ```
 git clone https://github.com/ds-vologdin/dcInt.git
 ```
 
 ## Как использовать
-Пример использования
+Пример использования библиотеки представлен в words_code_statistic.py
+
+```
+from code_parse import get_top_words_in_path
+words_top = get_top_words_in_path(
+    path='/home/developer/code/', top_size=50, word_type='verb',
+    parse_code_type='function'
+)
+```
+top_size - максимальное количество выводимых в отчёт слов
+word_type - часть речи, которая нас интересует.
+Возможные значения: verb, noun, any.
+parse_code_type - говорит нам, что анализировать.
+Возможные значения function (анализируем названия функции) и variable (анализируем названия переменных).
+
+
+
+## words_code_statistic.py
+Поставляется в составе библиотеки code_parse.
+Приложение для формирования статистики по частоте употребления в коде различных слов.  Умеет работать с git-репозиториями и локальными проектами.  Выводит результат выполнения на консоль, csv-файл, json-файл.
+
+### Пример использования words_code_statistic.py
 ```
 python3 words_code_statistic.py --git-url https://github.com/django/django.git --word-type noun --parse-code-type variable --output json
 ```
 JSON-отчет будет записан в words_code_stat.json
+
+Однако
 
 ```
 python3 words_code_statistic.py -h
