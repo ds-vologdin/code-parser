@@ -131,10 +131,10 @@ def main(args):
     words_top = []
 
     for path_project in projects:
-        words_top += get_top_words_in_path(
+        words_top.extend(get_top_words_in_path(
             path_project, args.top_size, word_type=args.word_type,
             parse_code_type=args.parse_code_type
-        )
+        ))
 
     statistic = {
         'word_type': args.word_type,
