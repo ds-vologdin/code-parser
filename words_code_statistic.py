@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-from dclnt import get_top_words_in_path
+from code_parse import get_top_words_in_path
 
 from gitrepo import GitRepo
 import csv
