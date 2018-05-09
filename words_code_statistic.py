@@ -2,10 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-from dclnt import (
-    get_filenames_in_path,
-    get_top_words_in_path,
-)
+from dclnt import get_top_words_in_path
+
 from gitrepo import GitRepo
 import csv
 import json
@@ -102,7 +100,7 @@ def output_to_csv(statistic):
 
 def output_to_stdout(statistic):
     # Выводим на экран результаты
-    print('total {0} files'.format(statistic['file_count']))
+    # print('total {0} files'.format(statistic['file_count']))
     print('statistic type: {0}'.format(statistic['parse_code_type']))
     print_statistics_words_top(statistic['words_top'],
                                words_type=statistic['word_type'])
@@ -131,21 +129,18 @@ def main(args):
 
     # Считаем статистику
     words_top = []
-    filenames = []
 
     for path_project in projects:
         words_top += get_top_words_in_path(
             path_project, args.top_size, word_type=args.word_type,
             parse_code_type=args.parse_code_type
         )
-        filenames += get_filenames_in_path(path_project)
 
     statistic = {
         'word_type': args.word_type,
         'top_size': args.top_size,
         'parse_code_type': args.parse_code_type,
         'words_top': words_top,
-        'file_count': len(filenames),
         'projects': projects,
     }
     output_statistic(statistic, output_type=args.output)
