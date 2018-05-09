@@ -15,6 +15,8 @@ git clone https://github.com/ds-vologdin/dcInt.git
 
 ```
 from code_parse import get_top_words_in_path
+
+
 words_top = get_top_words_in_path(
     path='/home/developer/code/', top_size=50, word_type='verb',
     parse_code_type='function'
@@ -34,11 +36,12 @@ parse_code_type - говорит нам, что анализировать.
 
 ### Пример использования words_code_statistic.py
 ```
-python3 words_code_statistic.py --git-url https://github.com/django/django.git --word-type noun --parse-code-type variable --output json
+python3 words_code_statistic.py --git-url https://github.com/django/django.git
+--word-type noun --parse-code-type variable --output json
 ```
 JSON-отчет будет записан в words_code_stat.json
 
-Однако
+Информацию о возможных аргументах можно посмотреть в хелпе.
 
 ```
 python3 words_code_statistic.py -h
