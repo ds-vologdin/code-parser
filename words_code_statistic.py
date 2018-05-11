@@ -4,7 +4,7 @@
 import argparse
 from code_parse import get_top_words_in_path
 
-from gitrepo import GitRepo
+from repository import GitRepository
 import csv
 import json
 
@@ -22,6 +22,11 @@ def parse_argv():
     parser.add_argument(
         '--git-url',
         help='URL git-репозитория с кодом, который требуется проанализировать'
+    )
+    parser.add_argument(
+        '--hg-url',
+        help='''URL hg-репозитория с кодом, который требуется проанализировать \
+(в разработке)'''
     )
     parser.add_argument(
         '--top-size', type=int, default=20,
@@ -62,12 +67,21 @@ def get_projects_in_path(path=''):
     return path.split()
 
 
-def get_projects(local_path=None, git_repo=None):
-    projects = get_projects_in_path(local_path)
+def get_projects_in_git(git_repo=None):
+    if not git_repo:
+        return []
     if not git_repo.is_cloned:
-        git_repo.clone_git_url()
+        git_repo.clone_url()
     if git_repo.local_path:
-        projects.append(git_repo.local_path)
+        return git_repo.local_path
+    return []
+
+
+def get_projects(local_path=None, git_repo=None, hg_repo=None):
+    projects = get_projects_in_path(local_path)
+    git_project = get_projects_in_git(git_repo)
+    if git_project:
+        projects.append(git_project)
     return projects
 
 
@@ -119,10 +133,10 @@ def main(args):
     # Парсим argv
     args = parse_argv()
 
-    git_repo = GitRepo(args.git_url)
+    git_repository = GitRepository(args.git_url)
 
     # Формируем список путей до анализируемых проектов
-    projects = get_projects(local_path=args.path, git_repo=git_repo)
+    projects = get_projects(local_path=args.path, git_repo=git_repository)
     if not projects:
         print('no projects...no statistics...')
         return 0
@@ -146,7 +160,7 @@ def main(args):
     output_statistic(statistic, output_type=args.output)
 
     # Не надо забывать чистить за собой скачанные репозитории
-    git_repo.remove_local_git_repo()
+    git_repository.remove_local_repository()
 
     return 0
 

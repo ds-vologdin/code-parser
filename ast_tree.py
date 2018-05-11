@@ -60,9 +60,7 @@ def get_names_in_ast_tree(tree, type_name='function'):
 
 
 def get_filenames_in_path(path):
-    ''' Получить все имена файлов с расширение .py в папке (рекурсивно)
-    max_count_files - ограничение на количества файлов
-    '''
+    ''' Получить все имена файлов с расширение .py в папке (рекурсивно) '''
     if not path:
         return []
     filenames = []
