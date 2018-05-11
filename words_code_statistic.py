@@ -39,13 +39,15 @@ def parse_argv():
     )
     parser.add_argument(
         '--parse-code-type',
-        choices=['function-frequency-word', 'variable-frequency-word'],
+        choices=['function-frequency-word', 'variable-frequency-word',
+                 'function-frequency'],
         default='function-frequency-word',
         help='''Параметр позволяет задать, что мы будем анализировать: \
-частота употребления слов в именах функций, \
-частота употребления слов в именах переменных.
+частота употребления слов в именах функций (function-frequency-word), \
+частота употребления слов в именах переменных (variable-frequency-word),\
+частота употребления имён функций (function-frequency).
 Возможные значения: function-frequency-word (по-умолчанию), \
-variable-frequency-word.
+variable-frequency-word, function-frequency.
 '''
     )
     parser.add_argument(

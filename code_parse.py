@@ -94,7 +94,7 @@ def get_top_words_in_path(path, top_size=10, word_type='verb',
                                             parse_code_type)
 
 
-def get_top_functions_names_in_path(path, top_size=10):
+def get_top_functions_names_in_path_python(path, top_size=10):
     ''' Получить ТОП используемых имён функций в каталоге path'''
     # Получаем список ast деревьев
     trees = get_trees(path)
@@ -105,6 +105,12 @@ def get_top_functions_names_in_path(path, top_size=10):
         ) if not (f.startswith('__') and f.endswith('__'))
     ]
     return collections.Counter(names).most_common(top_size)
+
+
+def get_top_functions_names_in_path(path, top_size=10, language='python'):
+    ''' Получить ТОП используемых имён функций в каталоге path'''
+    if language == 'python':
+        return get_top_functions_names_in_path_python(path, top_size=10)
 
 
 def get_statistic(path, top_size=10, word_type='verb',
@@ -120,3 +126,5 @@ def get_statistic(path, top_size=10, word_type='verb',
             path=path, top_size=top_size, word_type=word_type,
             parse_code_type='variable', language=language
         )
+    elif parse_code_type == 'function-frequency':
+        return get_top_functions_names_in_path(path, top_size, language)
