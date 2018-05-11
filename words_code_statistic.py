@@ -5,7 +5,7 @@ import argparse
 
 from code_parse import get_statistic
 from repository import GitRepository
-from output_top_words_statistic import output_statistic
+from output_statistic import output_statistic
 
 
 def parse_argv():
