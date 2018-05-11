@@ -14,19 +14,21 @@ git clone https://github.com/ds-vologdin/dcInt.git
 Пример использования библиотеки представлен в words_code_statistic.py
 
 ```
-from code_parse import get_top_words_in_path
+from code_parse import get_statistic
 
 
-words_top = get_top_words_in_path(
+words_top = get_statistic(
     path='/home/developer/code/', top_size=50, word_type='verb',
-    parse_code_type='function'
+    parse_code_type='function-frequency-word',
+    language='python'
 )
 ```
 top_size - максимальное количество выводимых в отчёт слов
 word_type - часть речи, которая нас интересует.
 Возможные значения: verb, noun, any.
 parse_code_type - говорит нам, что анализировать.
-Возможные значения function (анализируем названия функции) и variable (анализируем названия переменных).
+Возможные значения function-frequency-word (топ используемых слов в названиях функции) и variable-frequency-word (топ используемых слов в названиях функции).
+language - язык программирования, используемый в анализируемом проекте. Пока поддеживается только 'python'
 
 
 
@@ -46,10 +48,11 @@ JSON-отчет будет записан в words_code_stat.json
 ```
 python3 words_code_statistic.py -h
 usage: words_code_statistic.py [-h] [--path PATH] [--git-url GIT_URL]
-                               [--top-size TOP_SIZE]
+                               [--hg-url HG_URL] [--top-size TOP_SIZE]
                                [--word-type {verb,noun,any}]
-                               [--parse-code-type {function,variable}]
+                               [--parse-code-type {function-frequency-word,variable-frequency-word}]
                                [--output {stdout,json,csv}]
+                               [--language {python}]
 
 Приложение для проведения лексического анализа программного кода
 
@@ -60,17 +63,23 @@ optional arguments:
                         '/home/bill/coding/ /home/alisa/coding/'
   --git-url GIT_URL     URL git-репозитория с кодом, который требуется
                         проанализировать
+  --hg-url HG_URL       URL hg-репозитория с кодом, который требуется
+                        проанализировать (в разработке)
   --top-size TOP_SIZE   Ограничивает вывод количества слов
   --word-type {verb,noun,any}
                         Параметр позволяет задать какая часть речи нас
                         интересует для формирования статистики. Возможные
                         значения: verb (по-умолчанию), noun и any.
-  --parse-code-type {function,variable}
+  --parse-code-type {function-frequency-word,variable-frequency-word}
                         Параметр позволяет задать, что мы будем анализировать:
-                        имена функций или имена переменных. Возможные
-                        значения: function (по-умолчанию), variable.
+                        частота употребления слов в именах функций, частота
+                        употребления слов в именах переменных. Возможные
+                        значения: function-frequency-word (по-умолчанию),
+                        variable-frequency-word.
   --output {stdout,json,csv}
                         Формат вывода. Возможные значения: stdout (по-
                         умолчанию) - печать на консоль; json - печать в json-
                         файл; csv - печать в csv-файл.
+  --language {python}   Параметр позволяет задать язык, на котором написан
+                        проект. Возможные значения: python (по-умолчанию).
 ```
