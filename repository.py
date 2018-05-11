@@ -52,3 +52,13 @@ class GitRepository(Repository):
             self.local_path = ''
             self.is_cloned = False
         return self.local_path
+
+
+class HgRepository(Repository):
+    """ Класс для работы с hg репозиторием """
+    def __init__(self, git_url, to_dir='/tmp/', branch='master'):
+        super().__init__(git_url, to_dir, branch)
+
+    def clone_url(self):
+        ''' заглушка '''
+        pass
