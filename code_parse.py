@@ -65,28 +65,33 @@ def get_top_verbs_in_path(path, top_size=10):
     return get_top_words_in_path(path, top_size, word_type='verb')
 
 
-def get_top_words_in_path(path, top_size=10, word_type='verb',
-                          parse_code_type='function'):
-    ''' Получить ТОП используемых глаголов в каталоге path '''
+def get_top_words_in_path_python(path, top_size=10, word_type='verb',
+                                 parse_code_type='function'):
     # Формируем список ast деревьев
     trees = [t for t in get_trees(path) if t]
 
     names_in_code = flat(
         [get_names_in_ast_tree(t, type_name=parse_code_type) for t in trees]
     )
-
     # Удаляем магию
     names_in_code = [
         name for name in names_in_code
         if not (name.startswith('__') and name.endswith('__'))
     ]
-
     words = flat([
         get_words_from_name(name, word_type=word_type)
         for name in names_in_code
     ])
-
     return collections.Counter(words).most_common(top_size)
+
+
+def get_top_words_in_path(path, top_size=10, word_type='verb',
+                          parse_code_type='function', language='python'):
+    ''' Получить ТОП используемых глаголов в каталоге path
+    parse_code_type - function или variable '''
+    if language == 'python':
+        return get_top_words_in_path_python(path, top_size, word_type,
+                                            parse_code_type)
 
 
 def get_top_functions_names_in_path(path, top_size=10):
@@ -100,3 +105,18 @@ def get_top_functions_names_in_path(path, top_size=10):
         ) if not (f.startswith('__') and f.endswith('__'))
     ]
     return collections.Counter(names).most_common(top_size)
+
+
+def get_statistic(path, top_size=10, word_type='verb',
+                  parse_code_type='function-frequency-word',
+                  language='python'):
+    if parse_code_type == 'function-frequency-word':
+        return get_top_words_in_path(
+            path=path, top_size=top_size, word_type=word_type,
+            parse_code_type='function', language=language
+        )
+    elif parse_code_type == 'variable-frequency-word':
+        return get_top_words_in_path(
+            path=path, top_size=top_size, word_type=word_type,
+            parse_code_type='variable', language=language
+        )

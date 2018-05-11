@@ -19,8 +19,6 @@ class Repository:
         иначе False '''
         if (not self.local_path or self.local_path == '/tmp/'):
             return False
-        if not self.is_cloned:
-            return False
         try:
             shutil.rmtree(self.local_path)
             self.is_cloned = False

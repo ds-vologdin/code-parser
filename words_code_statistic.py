@@ -3,7 +3,7 @@
 
 import argparse
 
-from code_parse import get_top_words_in_path
+from code_parse import get_statistic
 from repository import GitRepository
 from output_top_words_statistic import output_statistic
 
@@ -39,11 +39,13 @@ def parse_argv():
     )
     parser.add_argument(
         '--parse-code-type',
-        choices=['function', 'variable'],
-        default='function',
+        choices=['function-frequency-word', 'variable-frequency-word'],
+        default='function-frequency-word',
         help='''Параметр позволяет задать, что мы будем анализировать: \
-имена функций или имена переменных.
-Возможные значения: function (по-умолчанию), variable.
+частота употребления слов в именах функций, \
+частота употребления слов в именах переменных.
+Возможные значения: function-frequency-word (по-умолчанию), \
+variable-frequency-word.
 '''
     )
     parser.add_argument(
@@ -55,6 +57,14 @@ def parse_argv():
 stdout (по-умолчанию) - печать на консоль;
 json - печать в json-файл;
 csv - печать в csv-файл.
+'''
+    )
+    parser.add_argument(
+        '--language',
+        choices=['python'],
+        default='python',
+        help='''Параметр позволяет задать язык, на котором написан проект.
+Возможные значения: python (по-умолчанию).
 '''
     )
     return parser.parse_args()
@@ -108,15 +118,16 @@ def main(args):
     words_top = []
 
     for path_project in projects:
-        words_top.extend(get_top_words_in_path(
+        words_top.extend(get_statistic(
             path_project, args.top_size, word_type=args.word_type,
-            parse_code_type=args.parse_code_type
+            parse_code_type=args.parse_code_type, language=args.language
         ))
 
     statistic = {
         'word_type': args.word_type,
         'top_size': args.top_size,
         'parse_code_type': args.parse_code_type,
+        'language': args.language,
         'words_top': words_top,
         'projects': projects,
     }
