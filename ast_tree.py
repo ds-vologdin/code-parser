@@ -2,33 +2,49 @@ import os
 import ast
 
 
-def get_trees(path, with_filenames=False, with_file_content=False):
+def get_tree(filename):
+    file_content = ''
+    try:
+        with open(filename, 'r', encoding='utf-8') as attempt_handler:
+            file_content = attempt_handler.read()
+    except:
+        return None
+    try:
+        return ast.parse(file_content)
+    except SyntaxError:
+        return None
+
+
+def get_tree_with_file_content(filename):
+    file_content = ''
+    try:
+        with open(filename, 'r', encoding='utf-8') as attempt_handler:
+            file_content = attempt_handler.read()
+    except:
+        return None
+    try:
+        return (filename, ast.parse(file_content), file_content)
+    except SyntaxError:
+        return None
+
+
+def get_trees(path):
     ''' Функция формирования ast деревьев из .py файлов, расположенных
         в каталоге path
     '''
-    # Получаем список файлов в каталоге
     filenames = get_filenames_in_path(path)
     # Собираем список ast деревьев
-    trees = []
-    for filename in filenames:
-        with open(filename, 'r', encoding='utf-8') as attempt_handler:
-            try:
-                main_file_content = attempt_handler.read()
-            except:
-                continue
-        try:
-            tree = ast.parse(main_file_content)
-        except SyntaxError:
-            # print(e) - мы за чистые функции
-            tree = None
-        if with_filenames:
-            if with_file_content:
-                trees.append((filename, main_file_content, tree))
-            else:
-                trees.append((filename, tree))
-        else:
-            trees.append(tree)
-    return trees
+    return [get_tree(filename) for filename in filenames]
+
+
+def get_trees_with_filenames(path):
+    filenames = get_filenames_in_path(path)
+    return [(filename, get_tree(filename)) for filename in filenames]
+
+
+def get_trees_with_files_content(path):
+    filenames = get_filenames_in_path(path)
+    return [get_tree_with_file_content(filename) for filename in filenames]
 
 
 def get_all_names_in_tree(tree):

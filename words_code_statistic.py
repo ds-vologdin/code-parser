@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
+import sys
 import argparse
 
 from code_parse import get_statistic
@@ -138,8 +136,6 @@ def main(args):
     # Не надо забывать чистить за собой скачанные репозитории
     git_repository.remove_local_repository()
 
-    return 0
 
 if __name__ == "__main__":
-    import sys
     sys.exit(main(sys.argv))
