@@ -108,11 +108,10 @@ def main(args):
 
     git_repository = GitRepository(args.git_url)
 
-    # Формируем список путей до анализируемых проектов
     projects = get_projects(local_path=args.path, git_repo=git_repository)
     if not projects:
         print('no projects...no statistics...')
-        return 0
+        return None
 
     # Считаем статистику
     words_top = []

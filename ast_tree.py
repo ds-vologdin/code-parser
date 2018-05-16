@@ -33,7 +33,6 @@ def get_trees(path):
         в каталоге path
     '''
     filenames = get_filenames_in_path(path)
-    # Собираем список ast деревьев
     return [get_tree(filename) for filename in filenames]
 
 
@@ -86,6 +85,5 @@ def get_filenames_in_path(path):
             os.path.join(dirname, filename)
             for filename in files if filename.endswith('.py')
         ]
-        # Накапливаем результат
         filenames += filenames_current
     return filenames
