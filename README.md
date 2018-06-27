@@ -56,6 +56,8 @@ usage: words_code_statistic.py [-h] [--path PATH] [--git-url GIT_URL]
                                [--parse-code-type {function-frequency-word,variable-frequency-word,function-frequency}]
                                [--output {stdout,json,csv}]
                                [--language {python}]
+                               [--log-level {debug,info,warning,error,critical}]
+                               [--log-file LOG_FILE]
 
 Приложение для проведения лексического анализа программного кода
 
@@ -88,4 +90,8 @@ optional arguments:
                         файл; csv - печать в csv-файл.
   --language {python}   Параметр позволяет задать язык, на котором написан
                         проект. Возможные значения: python (по-умолчанию).
+  --log-level {debug,info,warning,error,critical}
+                        Уровень вывода логов. По умолчанию warning.
+  --log-file LOG_FILE   Имя логфайла. По-умолчанию words_code_statistic.log
+
 ```
