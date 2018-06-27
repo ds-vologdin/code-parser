@@ -150,11 +150,11 @@ def get_statistic(path, top_size=10, word_type='verb',
             }
         )
     }
-    calculate_statistic, kwargs_statistic_handler = \
+    calculate_statistic, kwargs_calculate_statistic = \
         parse_code_type_handlers.get(parse_code_type, (None, None))
     if not calculate_statistic:
         logging.error(
             'get_statistic: handler for {0} not found'.format(parse_code_type)
         )
         return None
-    return calculate_statistic(**kwargs_statistic_handler)
+    return calculate_statistic(**kwargs_calculate_statistic)
