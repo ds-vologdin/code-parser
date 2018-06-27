@@ -1,5 +1,6 @@
 import collections
 from nltk import pos_tag
+import logging
 
 from ast_tree import get_trees, get_all_names_in_tree, get_names_in_ast_tree
 
@@ -123,15 +124,37 @@ def get_top_functions_names_in_path(path, top_size=10, language='python'):
 def get_statistic(path, top_size=10, word_type='verb',
                   parse_code_type='function-frequency-word',
                   language='python'):
-    if parse_code_type == 'function-frequency-word':
-        return get_top_words_in_path(
-            path=path, top_size=top_size, word_type=word_type,
-            parse_code_type='function', language=language
+
+    parse_code_type_handlers = {
+        # 'type': (function, kwargs)
+        'function-frequency-word': (get_top_words_in_path, {
+                'path': path,
+                'top_size': top_size,
+                'language': language,
+                'word_type': word_type,
+                'parse_code_type': 'function',
+            }
+        ),
+        'variable-frequency-word': (get_top_words_in_path, {
+                'path': path,
+                'top_size': top_size,
+                'language': language,
+                'word_type': word_type,
+                'parse_code_type': 'variable',
+            }
+        ),
+        'function-frequency': (get_top_functions_names_in_path, {
+                'path': path,
+                'top_size': top_size,
+                'language': language,
+            }
         )
-    elif parse_code_type == 'variable-frequency-word':
-        return get_top_words_in_path(
-            path=path, top_size=top_size, word_type=word_type,
-            parse_code_type='variable', language=language
+    }
+    calculate_statistic, kwargs_statistic_handler = \
+        parse_code_type_handlers.get(parse_code_type, (None, None))
+    if not calculate_statistic:
+        logging.error(
+            'get_statistic: handler for {0} not found'.format(parse_code_type)
         )
-    elif parse_code_type == 'function-frequency':
-        return get_top_functions_names_in_path(path, top_size, language)
+        return None
+    return calculate_statistic(**kwargs_statistic_handler)
