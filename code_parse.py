@@ -14,7 +14,13 @@ def is_verb(word):
     if not word:
         return False
     pos_info = pos_tag([word])
-    return pos_info[0][1] == 'VB'
+    # VB	verb, base form	take
+    # VBD	verb, past tense	took
+    # VBG	verb, gerund/present participle	taking
+    # VBN	verb, past participle	taken
+    # VBP	verb, sing. present, non-3d	take
+    # VBZ	verb, 3rd person sing. present	takes
+    return pos_info[0][1] in ('VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ')
 
 
 def is_noun(word):
