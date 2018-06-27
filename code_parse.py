@@ -28,7 +28,11 @@ def is_noun(word):
     if not word:
         return False
     pos_info = pos_tag([word])
-    return pos_info[0][1] == 'NN'
+    # NN	noun, singular 'desk'
+    # NNS	noun plural	'desks'
+    # NNP	proper noun, singular	'Harrison'
+    # NNPS	proper noun, plural	'Americans'
+    return pos_info[0][1] in ('NN', 'NNS', 'NNP', 'NNPS')
 
 
 def get_words_from_name(name, word_type='verb'):
