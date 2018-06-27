@@ -4,7 +4,7 @@ from nltk import pos_tag
 from ast_tree import get_trees, get_all_names_in_tree, get_names_in_ast_tree
 
 
-def flat(not_flat_list):
+def flatten_list(not_flat_list):
     """ [(1,2), (3,4)] -> [1, 2, 3, 4]"""
     return [item for sublist in not_flat_list for item in sublist]
 
@@ -46,12 +46,14 @@ def split_snake_case_name_to_words(name):
 def get_all_words_in_path(path):
     ''' Получить все слова используемые в текстовых файлах каталога path '''
     trees = [t for t in get_trees(path) if t]
-    names = flat([get_all_names_in_tree(t) for t in trees])
+    names = flatten_list([get_all_names_in_tree(t) for t in trees])
     # Исключаем магические функции
     names = [
         f for f in names if not (f.startswith('__') and f.endswith('__'))
     ]
-    return flat([split_snake_case_name_to_words(name) for name in names])
+    return flatten_list(
+        [split_snake_case_name_to_words(name) for name in names]
+    )
 
 
 def get_functions_names_in_tree(tree):
@@ -67,7 +69,7 @@ def get_top_verbs_in_path(path, top_size=10):
 def get_top_words_in_path_python(path, top_size=10, word_type='verb',
                                  parse_code_type='function'):
     trees = [t for t in get_trees(path) if t]
-    names_in_code = flat(
+    names_in_code = flatten_list(
         [get_names_in_ast_tree(t, type_name=parse_code_type) for t in trees]
     )
     # Удаляем магию
@@ -75,7 +77,7 @@ def get_top_words_in_path_python(path, top_size=10, word_type='verb',
         name for name in names_in_code
         if not (name.startswith('__') and name.endswith('__'))
     ]
-    words = flat([
+    words = flatten_list([
         get_words_from_name(name, word_type=word_type)
         for name in names_in_code
     ])
@@ -95,7 +97,7 @@ def get_top_functions_names_in_path_python(path, top_size=10):
     ''' Получить ТОП используемых имён функций в каталоге path'''
     trees = get_trees(path)
     names = [
-        f for f in flat(
+        f for f in flatten_list(
             [get_functions_names_in_tree(t) for t in trees if t]
         ) if not (f.startswith('__') and f.endswith('__'))
     ]
