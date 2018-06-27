@@ -4,6 +4,18 @@ import argparse
 from code_parse import get_statistic
 from repository import GitRepository
 from output_statistic import output_statistic
+import logging
+
+
+def convert_str_to_logging_level(level_str):
+    level = {
+        'debug': logging.DEBUG,
+        'info': logging.INFO,
+        'warning': logging.WARNING,
+        'error': logging.ERROR,
+        'critical': logging.CRITICAL
+    }
+    return level.get(level_str, logging.WARNING)
 
 
 def parse_argv():
@@ -67,6 +79,16 @@ csv - печать в csv-файл.
 Возможные значения: python (по-умолчанию).
 '''
     )
+    parser.add_argument(
+        '--log-level',
+        choices=['debug', 'info', 'warning', 'error', 'critical'],
+        default='warning',
+        help='Уровень вывода логов. По умолчанию warning.'
+    )
+    parser.add_argument(
+        '--log-file', default='{}.log'.format(__file__.rstrip('.py')),
+        help='Имя логфайла. По-умолчанию {}.log'.format(__file__.rstrip('.py'))
+    )
     return parser.parse_args()
 
 
@@ -105,6 +127,12 @@ def get_projects(local_path=None, git_repo=None, hg_repo=None):
 def main(args):
     # Парсим argv
     args = parse_argv()
+
+    logging.basicConfig(
+        filename=args.log_file,
+        level=convert_str_to_logging_level(args.log_level),
+        format='%(asctime)s:%(levelname)s:%(message)s'
+    )
 
     git_repository = GitRepository(args.git_url)
 
