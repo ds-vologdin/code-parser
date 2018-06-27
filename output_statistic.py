@@ -14,6 +14,10 @@ def output_statistic(statistic, output_type='stdout'):
     output_handler = output_type_handlers.get(output_type)
     if output_handler:
         output_handler(statistic)
+    else:
+        logging.error(
+            'output_statistic: handlers {} not found in output_type_handlers'.format(output_type)
+        )
 
 
 def print_statistics_words_top(words_top, words_type='words'):
