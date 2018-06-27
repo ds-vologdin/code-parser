@@ -36,15 +36,33 @@ def is_noun(word):
     return pos_info[0][1] in ('NN', 'NNS', 'NNP', 'NNPS')
 
 
+def get_verbs_from_name(name):
+    return [word for word in name.split('_') if is_verb(word)]
+
+
+def get_nouns_from_name(name):
+    return [word for word in name.split('_') if is_noun(word)]
+
+
+def get_any_words_from_name(name):
+    return [word for word in name.split('_')]
+
+
 def get_words_from_name(name, word_type='verb'):
-    words = []
-    if word_type == 'verb':
-        words = [word for word in name.split('_') if is_verb(word)]
-    elif word_type == 'noun':
-        words = [word for word in name.split('_') if is_noun(word)]
-    elif word_type == 'any':
-        words = [word for word in name.split('_')]
-    return words
+    word_type_handler = {
+        'verb': get_verbs_from_name,
+        'noun': get_nouns_from_name,
+        'any': get_any_words_from_name,
+    }
+    handler = word_type_handler.get(word_type)
+    if not handler:
+        logging.error(
+            'get_words_from_name: word_type_handler {} not found'.format(
+                word_type
+            )
+        )
+        return None
+    return handler(name)
 
 
 def split_snake_case_name_to_words(name):
